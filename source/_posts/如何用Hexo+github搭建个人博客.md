@@ -1,38 +1,59 @@
 ---
-title: Hello World
+title: 如何用Hexo+github搭建个人博客
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
+## 安装Hexo
 
-## Quick Start
-
-### Create a new post
+### 全局安装hexo-cli
 
 ``` bash
-$ hexo new "My New Post"
+$ npm install hexo-cli -g
 ```
 
-More info: [Writing](https://hexo.io/docs/writing.html)
-
-### Run server
+### 创建一个新文件夹，命名为hexo,然后cd到这个目录下
 
 ``` bash
-$ hexo server
+$ hexo init
+$ npm install hexo-deployer-git --save
+$ npm install hexo-server --save
 ```
 
-More info: [Server](https://hexo.io/docs/server.html)
 
-### Generate static files
+### 新建一篇文章
 
 ``` bash
-$ hexo generate
+$ hexo n "newblog.md"
 ```
 
-More info: [Generating](https://hexo.io/docs/generating.html)
 
-### Deploy to remote sites
+### 生成静态文件
 
 ``` bash
-$ hexo deploy
+$ hexo g
+```
+### 部署并同步到GitHub
+#### 设置Git的user name和email
+``` bash
+git config --global user.name "yourname"
+git config --global user.email "youremail"
 ```
 
-More info: [Deployment](https://hexo.io/docs/deployment.html)
+#### 生成SSH密钥
+``` bash
+ssh-keygen -t rsa -C "youremail@gmail.com"
+```
+
+在~/.ssh 目录下打开id_rsa.pub 文件，复制里面的内容，
+在个人的github设置里面==> SSH and GPG keys ==> New SSH key,随便取一个名字，内容就是刚刚复制的公钥内容，保存
+_config.yml最后加
+```
+deploy:
+      type: git
+      repo: git@github.com:raymoe/raymoe.github.io.git
+      branch: master
+```
+
+最后执行
+
+``` bash
+$ hexo d
+```
