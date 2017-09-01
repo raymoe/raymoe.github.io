@@ -1,5 +1,8 @@
 ---
 title: 如何用Hexo+github搭建个人博客
+tags: Hexo
+categories: 杂项
+comments: true
 ---
 ## 安装Hexo
 
@@ -30,14 +33,14 @@ $ hexo n "newblog.md"
 ``` bash
 $ hexo g
 ```
-### 部署并同步到GitHub
-#### 设置Git的user name和email
+## 部署并同步到GitHub
+### 设置Git的user name和email
 ``` bash
 git config --global user.name "yourname"
 git config --global user.email "youremail"
 ```
 
-#### 生成SSH密钥
+### 生成SSH密钥
 ``` bash
 ssh-keygen -t rsa -C "youremail@gmail.com"
 ```
@@ -52,7 +55,9 @@ deploy:
       branch: master
 ```
 
-最后执行
+### 部署
+
+执行下面的命令
 
 ``` bash
 $ hexo d
