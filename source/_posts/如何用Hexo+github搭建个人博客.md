@@ -62,3 +62,12 @@ deploy:
 ``` bash
 $ hexo d
 ```
+
+## 多终端同步
+参见[如何解决github+Hexo的博客多终端同步问题](http://blog.csdn.net/Monkey_LZL/article/details/60870891)  
+参见知乎问题[使用hexo，如果换了电脑怎么更新博客？](https://www.zhihu.com/question/21193762)
+
+## 本地预览和发布之后的效果不一样怎么办
+hexo clean 清除缓存  
+然后： hexo g 生成待发布的文件  
+最后： hexo d 发布
