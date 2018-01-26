@@ -1,5 +1,6 @@
 ---
 title: 如何用Hexo+github搭建个人博客
+date: 2017-09-01 15:41:34
 tags: Hexo
 categories: 杂项
 comments: true
