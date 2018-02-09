@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.2" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.0.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="tensorflow," />
+
+
+<meta name="description" content="变量初始化变量变量使用之前必须初始化，如果使用之前不初始化，将会报错FailedPreconditionError: Attempting to use uninitialized value。可以将未初始化的变量打印出来1print(session.run(tf.report_uninitialized_variables())) 最简单的方法是一次性初始化所有变量12with tf.Sessi">
+<meta name="keywords" content="tensorflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tensorflow学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/02/09/tensorflow学习笔记/index.html">
+<meta property="og:site_name" content="国服第一孙尚香">
+<meta property="og:description" content="变量初始化变量变量使用之前必须初始化，如果使用之前不初始化，将会报错FailedPreconditionError: Attempting to use uninitialized value。可以将未初始化的变量打印出来1print(session.run(tf.report_uninitialized_variables())) 最简单的方法是一次性初始化所有变量12with tf.Sessi">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-09T09:46:04.272Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tensorflow学习笔记">
+<meta name="twitter:description" content="变量初始化变量变量使用之前必须初始化，如果使用之前不初始化，将会报错FailedPreconditionError: Attempting to use uninitialized value。可以将未初始化的变量打印出来1print(session.run(tf.report_uninitialized_variables())) 最简单的方法是一次性初始化所有变量12with tf.Sessi">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/09/tensorflow学习笔记/"/>
+
+
+  <title>tensorflow学习笔记 | 国服第一孙尚香</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">国服第一孙尚香</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/09/tensorflow学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="raymoe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="国服第一孙尚香">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">tensorflow学习笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-09T16:49:56+08:00">2018-02-09</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><h4 id="初始化变量"><a href="#初始化变量" class="headerlink" title="初始化变量"></a>初始化变量</h4><p>变量使用之前必须初始化，如果使用之前不初始化，将会报错FailedPreconditionError: Attempting to use uninitialized value。可以将未初始化的变量打印出来<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(session.run(tf.report_uninitialized_variables()))</span><br></pre></td></tr></table></figure></p>
+<p>最简单的方法是一次性初始化所有变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.global_variables_initializer())</span><br></pre></td></tr></table></figure></p>
+<p>初始化一部分变量，可以通过tf.variables_initializer()来初始化你想要初始化的变量列表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.variables_initializer([a, b]))</span><br></pre></td></tr></table></figure></p>
+<h4 id="变量求值"><a href="#变量求值" class="headerlink" title="变量求值"></a>变量求值</h4><p>可以通过session.run<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># W is a 784 x 10 variable of random values</span><br><span class="line">V = tf.get_variable(&quot;normal_matrix&quot;, shape=(784, 10), </span><br><span class="line">                     initializer=tf.truncated_normal_initializer())</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.global_variables_initializer())</span><br><span class="line">	print(sess.run(V))</span><br></pre></td></tr></table></figure></p>
+<p>也可以通过tf.Variable.eval()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.global_variables_initializer())</span><br><span class="line">	print(V.eval())</span><br></pre></td></tr></table></figure></p>
+<h4 id="变量赋值"><a href="#变量赋值" class="headerlink" title="变量赋值"></a>变量赋值</h4><p>通过tf.Variable.assign()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(10)</span><br><span class="line">W.assign(100)</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(W.initializer)</span><br><span class="line">	print(W.eval()) # &gt;&gt; 10</span><br></pre></td></tr></table></figure></p>
+<p>为什么是10而不是100，如果我们通过assign 操作来做，要使得这个op生效，需要在session中run这个操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(10)</span><br><span class="line"></span><br><span class="line">assign_op = W.assign(100)</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(assign_op)</span><br><span class="line">	print(W.eval()) # &gt;&gt; 100</span><br></pre></td></tr></table></figure></p>
+<p>注意我们并没有初始化W这个变量，因为assign()替我们做了，实际上，initializer操作是一个将变量的初始值赋值给变量自身的assign()操作<br>在源代码里面<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># in the source code</span><br><span class="line">self._initializer_op = state_ops.assign(self._variable, self._initial_value,                                                                      validate_shape=validate_shape).op</span><br></pre></td></tr></table></figure></p>
+<p>一个有意思的例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># create a variable whose original value is 2</span><br><span class="line">a = tf.get_variable(&apos;scalar&apos;, initializer=tf.constant(2)) </span><br><span class="line">a_times_two = a.assign(a * 2)</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(tf.global_variables_initializer()) </span><br><span class="line">	sess.run(a_times_two) # &gt;&gt; 4</span><br><span class="line">	sess.run(a_times_two) # &gt;&gt; 8</span><br><span class="line">	sess.run(a_times_two) # &gt;&gt; 16</span><br></pre></td></tr></table></figure></p>
+<p>对于简单的变量自增运算和变量自减，TensorFlow提供了tf.Variable.assign_add() 和 tf.Variable.assign_sub() 方法，和tf.Variable.assign()方法不同，tf.Variable.assign_add() 和 tf.Variable.assign_sub()并不初始化变量，因为这两个操作并不依赖变量的初始值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(10)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	sess.run(W.initializer)</span><br><span class="line">	print(sess.run(W.assign_add(10))) # &gt;&gt; 20</span><br><span class="line">	print(sess.run(W.assign_sub(2)))  # &gt;&gt; 18</span><br></pre></td></tr></table></figure>
+<p>因为TensorFlow的sessions单独保存变量，每个session都有自己定义在图中变量的当前值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">W = tf.Variable(10)</span><br><span class="line">sess1 = tf.Session()</span><br><span class="line">sess2 = tf.Session()</span><br><span class="line">sess1.run(W.initializer)</span><br><span class="line">sess2.run(W.initializer)</span><br><span class="line">print(sess1.run(W.assign_add(10)))		# &gt;&gt; 20</span><br><span class="line">print(sess2.run(W.assign_sub(2)))		# &gt;&gt; 8</span><br><span class="line">print(sess1.run(W.assign_add(100)))		# &gt;&gt; 120</span><br><span class="line">print(sess2.run(W.assign_sub(50)))		# &gt;&gt; -42</span><br><span class="line">sess1.close()</span><br><span class="line">sess2.close()</span><br></pre></td></tr></table></figure></p>
+<p>当你有一个变量依赖另外一个变量，假设你有定义U=W*2<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># W is a random 700 x 10 tensor</span><br><span class="line">W = tf.Variable(tf.truncated_normal([700, 10]))</span><br><span class="line">U = tf.Variable(W * 2)</span><br></pre></td></tr></table></figure></p>
+<p>在这种情况下你应该使用initialized_value() 来保证在初始化U时W自己的值已经被初始化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">U = tf.Variable(W.initialized_value() * 2)</span><br></pre></td></tr></table></figure></p>
+<h3 id="InteractiveSession"><a href="#InteractiveSession" class="headerlink" title="InteractiveSession"></a>InteractiveSession</h3><p>InteractiveSession 和 Session的区别在于InteractiveSession使他自己成为一个默认的session,以使得我们在执行run和eval方法时不需要在前面显式启动session<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sess = tf.InteractiveSession()</span><br><span class="line">a = tf.constant(5.0)</span><br><span class="line">b = tf.constant(6.0)</span><br><span class="line">c = a * b</span><br><span class="line">print(c.eval()) # we can use &apos;c.eval()&apos; without explicitly stating a session</span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure></p>
+<h3 id="Control-Dependencies"><a href="#Control-Dependencies" class="headerlink" title="Control Dependencies"></a>Control Dependencies</h3><p>控制独立操作的执行次序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># your graph g have 5 ops: a, b, c, d, e</span><br><span class="line">with g.control_dependencies([a, b, c]):</span><br><span class="line">  # `d` and `e` will only run after `a`, `b`, and `c` have executed.</span><br><span class="line">  d = ...</span><br><span class="line">  e = …</span><br></pre></td></tr></table></figure></p>
+<h3 id="Importing-Data"><a href="#Importing-Data" class="headerlink" title="Importing Data"></a>Importing Data</h3><h4 id="老式方法：placeholders-和-feed-dict"><a href="#老式方法：placeholders-和-feed-dict" class="headerlink" title="老式方法：placeholders 和 feed_dict"></a>老式方法：placeholders 和 feed_dict</h4><p>记住TensorFlow程序通常有两个阶段<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">阶段1：组装图</span><br><span class="line">阶段2：通过一个session来执行图中的操作和变量求值</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a = tf.placeholder(tf.float32, shape=[3]) # a is placeholder for a vector of 3 elements</span><br><span class="line">b = tf.constant([5, 5, 5], tf.float32)</span><br><span class="line">c = a + b # use the placeholder as you would any tensor</span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	print(sess.run(c)) </span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	# compute the value of c given the value of a is [1, 2, 3]</span><br><span class="line">	print(sess.run(c, &#123;a: [1, 2, 3]&#125;)) 		# [6. 7. 8.]</span><br></pre></td></tr></table></figure>
+<p>可以给一个不是placeholders的tensors feed 数据。Any tensors that are feedable can be fed<br>To check if a tensor is feedable or not, use:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tf.Graph.is_feedable(tensor)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a = tf.add(2, 5)</span><br><span class="line">b = tf.multiply(a, 3)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">	print(sess.run(b)) 						# &gt;&gt; 21</span><br><span class="line">	# compute the value of b given the value of a is 15</span><br><span class="line">	print(sess.run(b, feed_dict=&#123;a: 15&#125;)) 			# &gt;&gt; 45</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/25/RSA加密算法/" rel="next" title="RSA加密算法">
+                <i class="fa fa-chevron-left"></i> RSA加密算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="uyan_frame"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">raymoe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#变量"><span class="nav-number">1.</span> <span class="nav-text">变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化变量"><span class="nav-number">1.1.</span> <span class="nav-text">初始化变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量求值"><span class="nav-number">1.2.</span> <span class="nav-text">变量求值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量赋值"><span class="nav-number">1.3.</span> <span class="nav-text">变量赋值</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InteractiveSession"><span class="nav-number">2.</span> <span class="nav-text">InteractiveSession</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Control-Dependencies"><span class="nav-number">3.</span> <span class="nav-text">Control Dependencies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Importing-Data"><span class="nav-number">4.</span> <span class="nav-text">Importing Data</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#老式方法：placeholders-和-feed-dict"><span class="nav-number">4.1.</span> <span class="nav-text">老式方法：placeholders 和 feed_dict</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">raymoe</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Pisces</a> v6.0.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.2"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+    
+
+    
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2156630"></script>
+      <!-- UY END -->
+    
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
