@@ -3,6 +3,7 @@ title: tensorflow学习笔记
 date: 2018-02-09 16:49:56
 tags: [tensorflow]
 ---
+本文是斯坦福大学[cs20](https://web.stanford.edu/class/cs20si/)的学习笔记，lecture note 和 slides 见 （https://web.stanford.edu/class/cs20si/syllabus.html）
 ### 变量
 
 #### 初始化变量
@@ -173,3 +174,42 @@ with tf.Session() as sess:
 	# compute the value of b given the value of a is 15
 	print(sess.run(b, feed_dict={a: 15})) 			# >> 45
 ```
+#### 新式方法 tf.data
+关于placeholders和feed_dicts的一个好处就是他们把数据处理放在了TensorFlow之外，这样就很容易在Python中随机生成随机数据。缺点是这种机制可能会减慢你的程序。用户通常最终会在一个线程中处理数据，导致这成为性能瓶颈，从而降低执行速度。
+
+TensorFlow的tf.data模块比占位符更快，比队列更容易使用，不会崩溃。
+
+通过tf.data,不像feed_dict将数据存储在非TensorFlow对象中，而是将数据存在tf.data.Dataset对象中，我们可以这样创建一个dataset
+```
+tf.data.Dataset.from_tensor_slices((features, labels))
+```
+打印output_types 和 output_shapes
+```
+print(dataset.output_types)			# >> (tf.float32, tf.float32)
+print(dataset.output_shapes)		       # >> (TensorShape([]), TensorShape([]))
+```
+
+
+可以通过使用TensorFlow的文件格式解析器来创建tf.data.Dataset,有点类似于老式的DataReader
+
+
+1. tf.data.TextLineDataset(filenames): 适用于数据以行来分割
+2. tf.data.FixedLengthRecordDataset(filenames): 适用于数据以固定长度来分割
+3. tf.data.TFRecordDataset(filenames)：适用于数据tfrecord 格式来存储
+
+
+
+当我们将数据转为Dataset对象之后，我们可以通过iterator来迭代样本数据
+```
+iterator = dataset.make_one_shot_iterator()
+X, Y = iterator.get_next()          
+```
+
+通过tf.data.Dataset,可以通过一条命令batch,shuffle,repeat 数据, 还可以通过map映射将一个数据集生成一个新的数据集
+```
+dataset = dataset.shuffle(1000)
+dataset = dataset.repeat(100)
+dataset = dataset.batch(128)
+dataset = dataset.map(lambda x: tf.one_hot(x, 10)) 
+```
+
