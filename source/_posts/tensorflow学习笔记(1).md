@@ -213,3 +213,24 @@ dataset = dataset.batch(128)
 dataset = dataset.map(lambda x: tf.one_hot(x, 10)) 
 ```
 
+### 立即执行(Eager excution)
+
+#### 动机
+
+构建图然后执行这种方法的优点是性能方面和易于转换到其他平台，缺点是声明式的语法 non-Pythonic,并且不好调试
+
+#### 主要优点
+
+1. 和python的调试工具兼容
+
+2. 发生错误时立即报告
+
+3. 可以使用python 的数据结构
+
+#### 启动Eager excution 需要下面两行代码
+``` python
+import tensorflow as tf
+import tensorflow.contrib.eager as tfe
+tfe.enable_eager_execution() # Call this at program start-up
+```
+
