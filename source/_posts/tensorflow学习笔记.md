@@ -213,3 +213,79 @@ dataset = dataset.batch(128)
 dataset = dataset.map(lambda x: tf.one_hot(x, 10)) 
 ```
 
+### 优化器
+
+当TensorFlow执行optimizer时，他会执行图里面这个操作所依赖的那一部分。
+![tensorflow_20180210000319](..\images\tensorflow_20180210000319.png)
+
+
+
+
+
+通过这张图，可以看到GradientDescentOptimizer 这个节点依赖三个节点，weights, bias, 和 gradients 。GradientDescentOptimizer  表示我们的更新方案是梯度下降法。TensorFlow 会自动为我们做微分，然后更新w和b的值以使得损失函数最小。
+
+
+
+对于我们不想训练的参数，可以设置Trainable 为 False
+
+```
+
+tf.Variable(
+    initial_value=None,
+    trainable=True,
+    collections=None,
+    validate_shape=True,
+    caching_device=None,
+    name=None,
+    variable_def=None,
+    dtype=None,
+    expected_shape=None,
+    import_scope=None,
+    constraint=None
+)
+
+tf.get_variable(
+    name,
+    shape=None,
+    dtype=None,
+    initializer=None,
+    regularizer=None,
+    trainable=True,
+    collections=None,
+    caching_device=None,
+    partitioner=None,
+    validate_shape=True,
+    use_resource=None,
+    custom_getter=None,
+    constraint=None
+)
+
+```
+
+
+
+还可以让优化器对特定的变量求梯度，还可以修改优化器算出的梯度
+
+```
+# create an optimizer.
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.1)
+
+# compute the gradients for a list of variables.
+grads_and_vars = optimizer.compute_gradients(loss, <list of variables>)
+
+# grads_and_vars is a list of tuples (gradient, variable).  Do whatever you
+# need to the 'gradient' part, for example, subtract each of them by 1.
+subtracted_grads_and_vars = [(gv[0] - 1.0, gv[1]) for gv in grads_and_vars]
+
+# ask the optimizer to apply the subtracted gradients.
+optimizer.apply_gradients(subtracted_grads_and_vars)
+```
+
+
+
+** 还可以通过 tf.stop_gradient来阻止某些tensors在计算梯度求导时候的贡献 **
+
+```
+stop_gradient( input, name=None )
+```
+
